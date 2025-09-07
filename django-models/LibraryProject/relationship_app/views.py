@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.detail import DetailView
 from .models import Book
 from .models import Library
+from django.contrib.auth import login
 
 def list_books(request):
     books = Book.objects.all()
@@ -25,7 +26,8 @@ def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            login(request, user)  # Log the user in after registration
             return redirect('login')
     else:
         form = UserCreationForm()
