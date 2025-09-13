@@ -130,3 +130,37 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
+# --------------------------
+# SECURITY ENHANCEMENTS
+# --------------------------
+
+# Disable debug mode in production
+DEBUG = False
+
+# Allow only your domain(s)
+ALLOWED_HOSTS = ['yourdomain.com', 'www.yourdomain.com']
+
+# Cookies must be sent over HTTPS only
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+# Browser security headers
+SECURE_BROWSER_XSS_FILTER = True       # Enable browser XSS filter
+SECURE_CONTENT_TYPE_NOSNIFF = True     # Prevent MIME type sniffing
+X_FRAME_OPTIONS = 'DENY'               # Prevent clickjacking
+
+# HTTPS settings
+SECURE_SSL_REDIRECT = True             # Redirect HTTP -> HTTPS
+SECURE_HSTS_SECONDS = 31536000         # Enforce HTTPS for 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Content Security Policy (CSP)
+INSTALLED_APPS += ['csp']  
+MIDDLEWARE += ['csp.middleware.CSPMiddleware']
+
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'",)
+CSP_IMG_SRC = ("'self'", 'data:')
+
