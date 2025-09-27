@@ -4,6 +4,7 @@ from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Book
 from .serializers import BookSerializer
+from django_filters import rest_framework as filters
 
 
 # ---------- LIST ----------
