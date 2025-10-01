@@ -83,6 +83,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
         'USER': 'ESSAM',
         'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
