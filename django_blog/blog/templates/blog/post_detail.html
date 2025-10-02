@@ -1,5 +1,9 @@
 {% extends 'blog/base.html' %}
 {% block content %}
+{% include "blog/_comment_list.html" %}
+{% if user.is_authenticated %}
+    {% include "blog/_comment_form.html" with form=comment_form %}
+{% endif %}
 <h2>{{ object.title }}</h2>
 <p>{{ object.content }}</p>
 <p>By {{ object.author }} on {{ object.date_posted }}</p>
