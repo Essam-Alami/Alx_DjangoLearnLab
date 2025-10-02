@@ -11,7 +11,8 @@ from .views import (
                 CommentUpdateView,
                 CommentDeleteView,
                 search_posts,
-                posts_by_tag
+                posts_by_tag,
+                PostByTagListView
                     )
 
 
@@ -42,4 +43,5 @@ urlpatterns = [
 
     path('search/', search_posts, name='search-posts'),
     path('tags/<str:tag_name>/', posts_by_tag, name='posts-by-tag'),
+    path('tags/<slug:tag_slug>/', PostByTagListView.as_view(), name='posts-by-tag'),
 ]
