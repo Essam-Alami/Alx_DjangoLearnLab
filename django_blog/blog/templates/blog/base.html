@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Django Blog</title>
+  <form method="get" action="{% url 'search-posts' %}">
+    <input type="text" name="q" placeholder="Search...">
+    <button type="submit">Search</button>
+</form>
 </head>
 <body>
     <h1>Welcome to the Blog app</h1>
