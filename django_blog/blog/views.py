@@ -22,3 +22,6 @@ def register_view(request):
 def profile_view(request):
     return render(request, 'blog/profile.html')
 
+def home(request):
+    return render(request, 'blog/home.html')
+
