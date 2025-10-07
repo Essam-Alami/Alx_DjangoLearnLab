@@ -4,7 +4,7 @@ from django.conf import settings
 User = settings.AUTH_USER_MODEL  # keeps it compatible with custom user
 
 class Post(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
+    user = models.ForeignKey('accounts.User', on_delete=models.CASCADE, related_name='posts')
     title = models.CharField(max_length=200)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
