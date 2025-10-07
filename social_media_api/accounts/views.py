@@ -20,6 +20,7 @@ class RegisterView(generics.CreateAPIView):
         data = UserSerializer(user, context={'request': request}).data
         data['token'] = token.key
         return Response(data, status=status.HTTP_201_CREATED)
+    
 
 # Simple profile view (read/update)
 class ProfileView(APIView):
