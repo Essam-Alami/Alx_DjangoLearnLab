@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions, filters
+from rest_framework import viewsets, permissions, filters, generics
 from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
 from .models import Post, Comment
@@ -61,10 +61,11 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def feed(request):
-    user = request.user
-    posts = Post.objects.filter(user__in=user.following.all()).order_by('-created_at')
-    serializer = PostSerializer(posts, many=True)
-    return Response(serializer.data)
+class FeedView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        following_users = user.following.all()
+        return Post.objects.filter(author__in=following_users).order_by('-created_at')
