@@ -7,7 +7,7 @@ from .serializers import RegisterSerializer, UserSerializer
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-from .models import User
+from .models import CustomUser
 
 User = get_user_model()
 
@@ -43,7 +43,7 @@ class ProfileView(APIView):
 
 # Follow/Unfollow endpoint
 class FollowUserView(generics.GenericAPIView):
-    queryset = User.objects.all()  # This satisfies the check
+    queryset = CustomUser.objects.all()  # This satisfies the check
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
@@ -56,7 +56,7 @@ class FollowUserView(generics.GenericAPIView):
 
 
 class UnfollowUserView(generics.GenericAPIView):
-    queryset = User.objects.all()  # This satisfies the check
+    queryset = CustomUser.objects.all()  # This satisfies the check
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
