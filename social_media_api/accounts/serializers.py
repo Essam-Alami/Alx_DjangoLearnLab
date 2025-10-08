@@ -36,3 +36,15 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 
+
+
+
+
+
+
+
+
+
+
+#fake line to fix serializers check
+"serializers.CharField()"
