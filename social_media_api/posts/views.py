@@ -7,7 +7,7 @@ from .permissions import IsOwnerOrReadOnly
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from notifications.utils import create_notification_for_like, create_notification_for_comment
+from notifications.utils import create_notification_for_comment
 from notifications.models import Notification
 
 
