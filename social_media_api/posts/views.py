@@ -1,12 +1,13 @@
-from rest_framework import viewsets, permissions, filters, generics
+from rest_framework import viewsets, permissions, filters, generics, status
 from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
-from .models import Post, Comment
-from .serializers import PostSerializer, CommentSerializer
+from .models import Post, Comment, Like
+from .serializers import PostSerializer, CommentSerializer, LikeSerializer
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from notifications.utils import create_notification_for_like, create_notification_for_comment
 
 
 
@@ -54,10 +55,18 @@ class CommentViewSet(viewsets.ModelViewSet):
         if post_id:
             qs = qs.filter(post_id=post_id)
         return qs
+    
+
 
     def perform_create(self, serializer):
         # allow creating comment by providing post field (post id) in payload
         serializer.save(author=self.request.user)
+        create_notification_for_comment(
+            actor=self.request.user,
+            recipient=serializer.instance.post.author,
+            target=serializer.instance.post
+        )
+        
 
 
 
@@ -69,3 +78,28 @@ class FeedView(generics.ListAPIView):
         user = self.request.user
         following_users = user.following.all()
         return Post.objects.filter(author__in=following_users).order_by('-created_at')
+    
+
+
+class LikePostView(generics.GenericAPIView):
+    serializer_class = LikeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        like, created = Like.objects.get_or_create(post=post, user=request.user)
+        if not created:
+            return Response({"detail": "You have already liked this post."}, status=status.HTTP_400_BAD_REQUEST)
+        # create notification
+        create_notification_for_like(actor=request.user, recipient=post.author, target=post)
+        return Response(LikeSerializer(like).data, status=status.HTTP_201_CREATED)
+
+class UnlikePostView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        deleted, _ = Like.objects.filter(post=post, user=request.user).delete()
+        if not deleted:
+            return Response({"detail": "You haven't liked this post."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "Unliked."}, status=status.HTTP_200_OK)
