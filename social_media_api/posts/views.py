@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from notifications.utils import create_notification_for_like, create_notification_for_comment
+from notifications.models import Notification
 
 
 
@@ -90,9 +91,10 @@ class LikePostView(generics.GenericAPIView):
 
         if created:
             # Only create a notification if this is a new like
-            create_notification_for_like(
+            Notification.objects.create(
                 actor=request.user,
                 recipient=post.author,
+                verb='liked your post',
                 target=post
             )
             return Response({"status": "liked"}, status=status.HTTP_201_CREATED)
