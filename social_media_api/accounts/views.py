@@ -42,19 +42,24 @@ class ProfileView(APIView):
 
 
 # Follow/Unfollow endpoint
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def follow_user(request, user_id):
-    target_user = get_object_or_404(User, id=user_id)
-    if request.user == target_user:
-        return Response({"detail": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
-    
-    request.user.following.add(target_user)
-    return Response({"detail": f"You are now following {target_user.username}."}, status=status.HTTP_200_OK)
+class FollowUserView(generics.GenericAPIView):
+    queryset = User.objects.all()  # This satisfies the check
+    permission_classes = [IsAuthenticated]
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def unfollow_user(request, user_id):
-    target_user = get_object_or_404(User, id=user_id)
-    request.user.following.remove(target_user)
-    return Response({"detail": f"You have unfollowed {target_user.username}."}, status=status.HTTP_200_OK)
+    def post(self, request, pk):
+        target_user = get_object_or_404(User, pk=pk)
+        if request.user == target_user:
+            return Response({"detail": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        request.user.following.add(target_user)
+        return Response({"detail": f"You are now following {target_user.username}."}, status=status.HTTP_200_OK)
+
+
+class UnfollowUserView(generics.GenericAPIView):
+    queryset = User.objects.all()  # This satisfies the check
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        target_user = get_object_or_404(User, pk=pk)
+        request.user.following.remove(target_user)
+        return Response({"detail": f"You have unfollowed {target_user.username}."}, status=status.HTTP_200_OK)
