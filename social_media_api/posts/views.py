@@ -82,17 +82,25 @@ class FeedView(generics.ListAPIView):
 
 
 class LikePostView(generics.GenericAPIView):
-    serializer_class = LikeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, pk):
-        post = get_object_or_404(Post, pk=pk)
-        like, created = Like.objects.get_or_create(post=post, user=request.user)
-        if not created:
-            return Response({"detail": "You have already liked this post."}, status=status.HTTP_400_BAD_REQUEST)
-        # create notification
-        create_notification_for_like(actor=request.user, recipient=post.author, target=post)
-        return Response(LikeSerializer(like).data, status=status.HTTP_201_CREATED)
+        post = generics.get_object_or_404(Post, pk=pk)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
+
+        if created:
+            # Only create a notification if this is a new like
+            create_notification_for_like(
+                actor=request.user,
+                recipient=post.author,
+                target=post
+            )
+            return Response({"status": "liked"}, status=status.HTTP_201_CREATED)
+        else:
+            # If the user already liked the post, maybe unlike it
+            like.delete()
+            return Response({"status": "unliked"}, status=status.HTTP_200_OK)
+
 
 class UnlikePostView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
