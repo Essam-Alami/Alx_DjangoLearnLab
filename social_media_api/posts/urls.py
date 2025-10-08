@@ -10,3 +10,12 @@ urlpatterns = [
     path('', include(router.urls)),
     path('FeedView/', FeedView.as_view, name='feed'),
 ]
+
+
+
+
+
+
+
+
+path('feed/')
